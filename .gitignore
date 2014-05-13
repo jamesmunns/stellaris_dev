@@ -1,0 +1,7 @@
+
+*.deps
+*.d
+*.o
+*.pyc
+*.out
+*.bin
