@@ -1,7 +1,8 @@
 from fabricate import *
 
 sources = [ 'startup_gcc',
-            'main'
+            'main',
+            'shiftbrite'
           ]
 
 def build():
@@ -10,7 +11,7 @@ def build():
     prepare()
 
 def compile():
-    INCLUDE_PATH = '/media/sf_virtualbox/stellaris'
+    INCLUDE_PATH = '/media/sf_virtualbox/stellaris_dev/stellaris'
 
     compile_options = [ '-g',
                         '-mthumb',
