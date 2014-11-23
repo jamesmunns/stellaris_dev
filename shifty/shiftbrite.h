@@ -78,6 +78,7 @@
 
 typedef unsigned long int uint32_t;
 typedef unsigned short int uint16_t;
+typedef short int sint16_t;
 typedef char uint8_t;
 
 #ifdef __cplusplus

@@ -1,9 +1,12 @@
 from fabricate import *
 
-sources = [ 'startup_gcc',
+sources = [
+            # Magic Files
+            'startup_gcc',
             'main',
-            'shiftbrite',
-            'utl_shifty'
+
+            # HAL files
+            'hal_uart',
           ]
 
 def build():

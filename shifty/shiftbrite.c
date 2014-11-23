@@ -87,7 +87,9 @@ void shiftbrite_latch(shiftbrite* sb) {
 
 static inline void pulse(port_pin pin) {
     ROM_GPIOPinWrite( pin.port, pin.pin, pin.pin );
+    ROM_SysCtlDelay(5);
     ROM_GPIOPinWrite( pin.port, pin.pin, ~pin.pin );
+    ROM_SysCtlDelay(5);
 }
 
 static inline void shift_bit(shiftbrite* sb, uint16_t val) {
@@ -99,7 +101,9 @@ static inline void shift_bit(shiftbrite* sb, uint16_t val) {
   {
       ROM_GPIOPinWrite( sb->data_pin.port, sb->data_pin.pin, ~sb->data_pin.pin );
   }
+  ROM_SysCtlDelay(5);
   pulse(sb->clock_pin);
+
 }
 
 static inline void shift_zeros(shiftbrite* sb, uint8_t count) {

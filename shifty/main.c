@@ -8,6 +8,8 @@
 
 #include "shiftbrite.h"
 
+#include "utl_shifty.h"
+
 #define LED_RED     GPIO_PIN_1
 #define LED_BLUE    GPIO_PIN_2
 #define LED_GREEN   GPIO_PIN_3
@@ -16,6 +18,15 @@
 #define LATCH_PIN   GPIO_PIN_5
 #define ENABLE_PIN  GPIO_PIN_6
 #define CLOCK_PIN   GPIO_PIN_7
+
+/*
+RS  - PD3
+EN  - PE1
+DB7 - PE2
+DB6 - PE3
+DB5 - PF1
+DB4 - PE5
+*/
 
 shiftbrite sb;
 
@@ -61,24 +72,28 @@ int main()
 
   // At startup, the module is disabled. Enable it.
   shiftbrite_enable(&sb);
+  shiftbrite_latch(&sb);
 
   for (;;) {
 
     // set the red LED pin high, others low
     //ROM_GPIOPinWrite(GPIO_PORTF_BASE, LED_RED|LED_GREEN|LED_BLUE, LED_RED|LED_BLUE);
-    shiftbrite_rgb(&sb, 128, 0, 0 ); // Green
-    shiftbrite_latch(&sb);
-    ROM_SysCtlDelay(5000000);
 
-    shiftbrite_rgb(&sb, 0, 128, 0 ); // Green
-    shiftbrite_latch(&sb);
-    ROM_SysCtlDelay(5000000);
+    for( int i = 0; i < 128; i++ )
+    {
+      shiftbrite_rgb( &sb, i, 0, 0 );
+      shiftbrite_latch( &sb );
+      ROM_SysCtlDelay(100000);
+    }
 
-    shiftbrite_rgb(&sb, 0, 0, 128 ); // Green
-    shiftbrite_latch(&sb);
-    ROM_SysCtlDelay(5000000);
+    for( int i = 127; i >= 0; i-- )
+    {
+      shiftbrite_rgb( &sb, i, 0, 0 );
+      shiftbrite_latch( &sb );
+      ROM_SysCtlDelay(100000);
+    }
 
-
+  ROM_SysCtlDelay(5000000);
 
   }
 
