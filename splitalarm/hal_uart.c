@@ -3,6 +3,8 @@ Hardware Abstraction Layer for UART0 - The UART connected to the ICDI Line
 */
 
 //Includes
+#include "ajm_types.h"
+
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
@@ -10,9 +12,19 @@ Hardware Abstraction Layer for UART0 - The UART connected to the ICDI Line
 #include "driverlib/gpio.h"
 #include "driverlib/rom.h"
 
+#include "ajm_cstd.h"
+
+#include "hal_uart.h"
+
+//Local variables
+char uart_buffer[ HAL_UART_BUFFER_SIZE ]; //We shouldnt expect more than 15 bytes/ms max
+uint8_t uart_loc;
+
+
 //Functions
 void hal_uart_init( void )
 {
+    uint8_t i;
     // The following lines borrowed from TI Example 'uart_polled.c'
 
     // This assumes the sysctl clocks have been set
@@ -50,6 +62,11 @@ void hal_uart_init( void )
                         (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
                          UART_CONFIG_PAR_NONE));
 
+    // Initialize UART Buffer
+    memset( uart_buffer, 0, HAL_UART_BUFFER_SIZE );
+    uart_loc = 0;
+
+
     return;
 }
 
@@ -70,12 +87,19 @@ void hal_uart_periodic( void )
         //
         cThisChar = ROM_UARTCharGet(UART0_BASE);
 
-        //
-        // Write the same character using the blocking write function.  This
-        // function will not return until there was space in the FIFO and
-        // the character is written.
-        //
-        ROM_UARTCharPut(UART0_BASE, cThisChar);
+        if( uart_loc < HAL_UART_BUFFER_SIZE )
+        {
+            uart_buffer[uart_loc] = cThisChar;
+            uart_loc++;
+
+            //
+            // Write the same character using the blocking write function.  This
+            // function will not return until there was space in the FIFO and
+            // the character is written.
+            //
+            ROM_UARTCharPut(UART0_BASE, cThisChar);
+        }
+
 
     //
     // Stay in the loop until either a CR or LF is received.
@@ -83,4 +107,28 @@ void hal_uart_periodic( void )
     } while((cThisChar != '\n') && (cThisChar != '\r'));
 
     return;
+}
+
+uint8_t hal_uart_buffer_get( char* buffer_out )
+{
+    uint8_t t_size;
+
+    // We assume the consumer has allocated enough space for the whole buffer
+    memcpy( uart_buffer, buffer_out, uart_loc );
+
+    // "Clear" the buffer
+    t_size = uart_loc;
+    uart_loc = 0;
+
+    return t_size;
+}
+
+void hal_uart_put( const char* output, uint32_t out_sz )
+{
+    uint32_t i;
+    for( i=0; i<out_sz; i++ )
+    {
+        ROM_UARTCharPut(UART0_BASE, output[i]);
+    }
+    //ROM_UARTCharPut(UART0_BASE, '@');
 }

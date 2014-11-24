@@ -12,7 +12,11 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 
+#include "ajm_types.h"
+
 #include "hal_uart.h"
+
+#include "iop_uart.h"
 
 #define LED_RED     GPIO_PIN_1
 #define LED_BLUE    GPIO_PIN_2
@@ -33,6 +37,8 @@ int main()
   while(1)
   {
       hal_uart_periodic();
+
+      iop_uart_periodic();
 
 
       //Wait 1000ms for next cycle. TODO: Replace with better interrupt

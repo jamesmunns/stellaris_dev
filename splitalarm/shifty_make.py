@@ -1,12 +1,18 @@
 from fabricate import *
 
+INCLUDE_PATH = '/media/sf_virtualbox/stellaris_dev/stellaris'
+
 sources = [
             # Magic Files
             'startup_gcc',
             'main',
+            'ajm_cstd',
 
             # HAL files
             'hal_uart',
+
+            # IOP files
+            'iop_uart',
           ]
 
 def build():
@@ -15,7 +21,6 @@ def build():
     prepare()
 
 def compile():
-    INCLUDE_PATH = '/media/sf_virtualbox/stellaris_dev/stellaris'
 
     compile_options = [ '-g',
                         '-mthumb',
@@ -27,7 +32,8 @@ def compile():
                         '-fdata-sections',
                         '-MD',
                         '-std=c99',
-                        '-Wall',
+                        #'-Wall',
+                        '-static',
                         '-pedantic',
                         '-DPART_LM4F120H5QR',
                         '-c',
@@ -47,7 +53,9 @@ def link():
                        '--entry=ResetISR',
                        '--output=shifty.out',
                        objects,
-                       '--gc-sections' ]
+                       '--gc-sections',
+                       '-L'+INCLUDE_PATH+'/driverlib/gcc-cm4f/',
+                       '-ldriver-cm4f' ]
 
 
     #arm-none-eabi-ld -T blink.ld --entry ResetISR -o a.out startup_gcc.o blink.o --gc-sections
